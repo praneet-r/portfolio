@@ -3,50 +3,40 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 :root {
-  --bg: #ffffff;
-  --bg-subtle: #f7f8fa;
-  --bg-hover: #f1f4f8;
-  --border: #e5e7eb;
-  --border-strong: #cbd5e1;
-  --ink: #111318;
-  --ink-secondary: #434a54;
-  --ink-muted: #6b7280;
+  --bg: #fcfcfb;
+  --bg-subtle: #f4f4f2;
+  --border: #e7e7e4;
+  --border-strong: #d4d4cf;
+  --ink: #171717;
+  --ink-secondary: #4a4a48;
+  --ink-muted: #767672;
   --accent: #1d4ed8;
   --accent-hover: #1e40af;
+  --accent-underline: rgba(29, 78, 216, 0.35);
   --accent-soft: #eff6ff;
-  --accent-border: #bfdbfe;
-  --status-done-bg: #ecfdf5;
-  --status-done-text: #047857;
-  --status-done-border: #a7f3d0;
-  --status-wip-bg: #fffbeb;
-  --status-wip-text: #b45309;
-  --status-wip-border: #fde68a;
+  --status-done: #047857;
+  --status-wip: #b45309;
 }
 
 .dark {
-  --bg: #0d0f12;
-  --bg-subtle: #14171c;
-  --bg-hover: #1b2028;
-  --border: #232832;
-  --border-strong: #343c4a;
-  --ink: #f3f4f6;
-  --ink-secondary: #b6bec9;
-  --ink-muted: #848e9c;
+  --bg: #111110;
+  --bg-subtle: #191917;
+  --border: #262623;
+  --border-strong: #3a3a35;
+  --ink: #efefec;
+  --ink-secondary: #b5b5b0;
+  --ink-muted: #82827c;
   --accent: #60a5fa;
   --accent-hover: #93c5fd;
-  --accent-soft: #142236;
-  --accent-border: #1e3a5f;
-  --status-done-bg: #0d241c;
-  --status-done-text: #6ee7b7;
-  --status-done-border: #1b4d3e;
-  --status-wip-bg: #271e0d;
-  --status-wip-text: #fcd34d;
-  --status-wip-border: #4d3814;
+  --accent-underline: rgba(96, 165, 250, 0.38);
+  --accent-soft: #152236;
+  --status-done: #6ee7b7;
+  --status-wip: #fcd34d;
 }
 
 html {
@@ -76,4 +66,36 @@ body {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+.prose-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition:
+    color 150ms ease,
+    text-decoration-color 150ms ease;
+}
+
+.prose-link:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.accent-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-underline);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition:
+    color 150ms ease,
+    text-decoration-color 150ms ease;
+}
+
+.accent-link:hover {
+  color: var(--accent-hover);
+  text-decoration-color: var(--accent-hover);
 }
