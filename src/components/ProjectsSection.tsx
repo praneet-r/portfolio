@@ -1,65 +1,120 @@
 import { useState } from 'react';
-import {
-  ArrowRight,
-  ArrowUpRight,
-  CheckCircle2,
-  Clock,
-  Code2,
-  Database,
-  Layers,
-  Sparkles,
-  Wrench,
-} from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
+import { ArrowUpRight } from 'lucide-react';
 import { projects, type ProjectItem } from '../data/portfolio';
 
-function StatusBadge({ project }: { project: ProjectItem }) {
+function StatusTag({ project }: { project: ProjectItem }) {
   if (project.statusTone === 'completed') {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent-border)] bg-[var(--accent-soft)] px-3 py-1 font-mono text-[11px] font-medium text-[var(--accent)]">
-        <CheckCircle2 className="h-3.5 w-3.5" />
+      <span
+        className="inline-flex items-center rounded border px-2 py-0.5 font-mono text-[11px] font-medium"
+        style={{
+          backgroundColor: 'var(--status-done-bg)',
+          color: 'var(--status-done-text)',
+          borderColor: 'var(--status-done-border)',
+        }}
+      >
         {project.status}
       </span>
     );
   }
 
-  if (project.statusTone === 'active') {
+  if (project.statusTone === 'wip') {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--warm-dot)]/25 bg-[var(--warm-soft)] px-3 py-1 font-mono text-[11px] font-medium text-[var(--warm-text)]">
-        <span className="h-1.5 w-1.5 rounded-full bg-[var(--warm-dot)]" />
+      <span
+        className="inline-flex items-center rounded border px-2 py-0.5 font-mono text-[11px] font-medium"
+        style={{
+          backgroundColor: 'var(--status-wip-bg)',
+          color: 'var(--status-wip-text)',
+          borderColor: 'var(--status-wip-border)',
+        }}
+      >
         {project.status}
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 font-mono text-[11px] font-medium text-[var(--ink-muted)]">
-      <Wrench className="h-3 w-3" />
+    <span className="inline-flex items-center rounded border border-[var(--border)] bg-[var(--bg-subtle)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--ink-muted)]">
       {project.status}
     </span>
   );
 }
 
-function ProjectActions({ project }: { project: ProjectItem }) {
+function WorkflowTable({ project }: { project: ProjectItem }) {
+  const workflows = project.workflows ?? [];
+  const [activeId, setActiveId] = useState(workflows[0]?.id ?? '');
+  const active = workflows.find((w) => w.id === activeId) ?? workflows[0];
+
+  if (!active) return null;
+
   return (
-    <div className="flex flex-wrap items-center gap-2.5 pt-2">
+    <div className="mt-5 overflow-hidden rounded-md border border-[var(--border)] bg-[var(--bg-subtle)]">
+      <div
+        role="tablist"
+        aria-label="Application workflows"
+        className="flex items-center justify-between border-b border-[var(--border)] px-3.5"
+      >
+        <div className="flex items-center gap-4">
+          {workflows.map((wf) => {
+            const selected = wf.id === active.id;
+            return (
+              <button
+                key={wf.id}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                onClick={() => setActiveId(wf.id)}
+                className={`-mb-px cursor-pointer border-b-2 py-2.5 text-xs font-medium transition-colors ${
+                  selected
+                    ? 'border-[var(--accent)] text-[var(--ink)]'
+                    : 'border-transparent text-[var(--ink-muted)] hover:text-[var(--ink)]'
+                }`}
+              >
+                {wf.label}
+              </button>
+            );
+          })}
+        </div>
+        <span className="hidden font-mono text-[11px] text-[var(--ink-muted)] sm:inline">
+          Workflow Architecture
+        </span>
+      </div>
+
+      <div className="divide-y divide-[var(--border)] bg-[var(--bg)]">
+        {active.steps.map((row) => (
+          <div
+            key={row.step}
+            className="grid gap-1 px-3.5 py-2.5 text-xs sm:grid-cols-[36px_minmax(0,1fr)_auto] sm:items-center sm:gap-3"
+          >
+            <span className="font-mono text-[11px] text-[var(--ink-muted)]">{row.step}</span>
+            <span className="text-[var(--ink-secondary)]">{row.action}</span>
+            <span className="font-mono text-[11px] text-[var(--accent)]">{row.layer}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProjectLinks({ project }: { project: ProjectItem }) {
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs">
       {project.liveDemoUrl ? (
         <a
           href={project.liveDemoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[#FAF8F5] transition-colors hover:bg-[var(--accent-hover)] dark:text-[#121210]"
+          className="inline-flex items-center gap-1 font-medium text-[var(--accent)] underline decoration-[var(--accent-border)] underline-offset-4 hover:decoration-[var(--accent)]"
         >
-          Live Demo
+          Live demo
           <ArrowUpRight className="h-3.5 w-3.5" />
         </a>
       ) : (
         <span
-          className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-[var(--border-strong)] bg-[var(--surface-muted)]/70 px-3.5 py-2 font-mono text-[11px] text-[var(--ink-muted)]"
-          title="Update liveDemoUrl in src/data/portfolio.ts when ready"
+          className="text-[var(--ink-muted)]"
+          title="Set liveDemoUrl in src/data/portfolio.ts when ready"
         >
-          <Clock className="h-3.5 w-3.5 text-[var(--ink-subtle)]" />
-          {project.liveDemoNote ?? 'Live demo coming soon'}
+          Demo: {project.liveDemoNote ?? 'Coming soon'}
         </span>
       )}
 
@@ -68,269 +123,75 @@ function ProjectActions({ project }: { project: ProjectItem }) {
           href={project.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-2 text-xs font-semibold text-[var(--ink)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          className="inline-flex items-center gap-1 font-medium text-[var(--ink)] underline decoration-[var(--border-strong)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)]"
         >
-          <Code2 className="h-3.5 w-3.5" />
-          Source Code
+          Source code
+          <ArrowUpRight className="h-3.5 w-3.5" />
         </a>
       ) : (
         <span
-          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 font-mono text-[11px] text-[var(--ink-subtle)]"
-          title="Update sourceUrl in src/data/portfolio.ts when ready"
+          className="text-[var(--ink-muted)]"
+          title="Set sourceUrl in src/data/portfolio.ts when ready"
         >
-          <Code2 className="h-3.5 w-3.5" />
-          {project.sourceNote ?? 'Repo link placeholder'}
+          Source: {project.sourceNote ?? 'Pending'}
         </span>
       )}
     </div>
   );
 }
 
-function FlagshipArchitecturePanel({ project }: { project: ProjectItem }) {
-  const workflows = project.workflows ?? [];
-  const [activeId, setActiveId] = useState(workflows[0]?.id ?? '');
-  const activeWorkflow = workflows.find((w) => w.id === activeId) ?? workflows[0];
-
-  if (!activeWorkflow) return null;
-
+export function ProjectsSection() {
   return (
-    <div className="flex h-full flex-col justify-between rounded-xl border border-[var(--border)] bg-[var(--surface-muted)]/75 p-5 sm:p-6">
-      <div>
-        <div className="flex items-center justify-between gap-2">
-          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--ink-subtle)]">
-            System Workflow
-          </span>
-          <span className="inline-flex items-center gap-1 font-mono text-[11px] text-[var(--accent)]">
-            <Layers className="h-3.5 w-3.5" />
-            Role-Scoped
-          </span>
-        </div>
+    <section id="projects" className="scroll-mt-20 border-t border-[var(--border)] py-14 lg:py-16">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-[var(--ink-muted)]">
+          Projects
+        </h2>
+        <span className="font-mono text-xs text-[var(--ink-muted)]">
+          {projects.length} selected
+        </span>
+      </div>
 
-        {/* Interactive Role Switcher */}
-        <div
-          role="tablist"
-          aria-label="Application workflow views"
-          className="mt-3.5 grid grid-cols-2 gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1"
-        >
-          {workflows.map((wf) => {
-            const selected = wf.id === activeWorkflow.id;
-            return (
-              <button
-                key={wf.id}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                onClick={() => setActiveId(wf.id)}
-                className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
-                  selected
-                    ? 'bg-[var(--accent)] text-[#FAF8F5] shadow-xs dark:text-[#121210]'
-                    : 'text-[var(--ink-muted)] hover:text-[var(--ink)]'
-                }`}
-              >
-                {wf.role}
-              </button>
-            );
-          })}
-        </div>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeWorkflow.id}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.18 }}
-            className="mt-5"
+      <div className="mt-6 divide-y divide-[var(--border)]">
+        {projects.map((project, index) => (
+          <article
+            key={project.id}
+            className={`${index === 0 ? 'pb-9' : 'py-9'} ${
+              index === projects.length - 1 ? 'pb-0' : ''
+            }`}
           >
-            <p className="text-xs italic text-[var(--ink-muted)]">
-              &ldquo;{activeWorkflow.tagline}&rdquo;
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-[18px] font-semibold tracking-[-0.015em] text-[var(--ink)]">
+                {project.title}
+              </h3>
+              <StatusTag project={project} />
+            </div>
+
+            <p className="mt-3 max-w-2xl text-[14.5px] leading-[1.68] text-[var(--ink-secondary)]">
+              {project.summary}
             </p>
 
-            <ol className="mt-4 space-y-2.5">
-              {activeWorkflow.steps.map((step, idx) => (
-                <li
-                  key={step.label}
-                  className="flex items-start gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3"
-                >
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[var(--accent-soft)] font-mono text-[10px] font-semibold text-[var(--accent)]">
-                    0{idx + 1}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-[var(--ink)]">{step.label}</p>
-                    <p className="mt-0.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
-                      {step.detail}
-                    </p>
-                  </div>
+            <ul className="mt-4 max-w-2xl space-y-1.5 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
+              {project.details.map((detail) => (
+                <li key={detail} className="flex items-start gap-2.5">
+                  <span
+                    className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-[var(--border-strong)]"
+                    aria-hidden="true"
+                  />
+                  <span>{detail}</span>
                 </li>
               ))}
-            </ol>
-          </motion.div>
-        </AnimatePresence>
-      </div>
+            </ul>
 
-      {/* Shared Backend Engine Footer */}
-      <div className="mt-5 border-t border-[var(--border)] pt-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-[var(--ink-muted)]">
-          <span className="inline-flex items-center gap-1.5">
-            <Database className="h-3.5 w-3.5 text-[var(--accent)]" />
-            Flask API + SQL
-          </span>
-          <ArrowRight className="h-3 w-3 text-[var(--ink-subtle)]" />
-          <span className="inline-flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
-            Structured LLM Pipeline
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
+            {project.workflows && <WorkflowTable project={project} />}
 
-export function ProjectsSection() {
-  const flagship = projects.find((p) => p.featured);
-  const secondary = projects.filter((p) => !p.featured);
+            <p className="mt-4 font-mono text-xs text-[var(--ink-muted)]">
+              {project.stack.join(' · ')}
+            </p>
 
-  return (
-    <section id="projects" className="scroll-mt-20 border-b border-[var(--border)] py-20 sm:py-28">
-      <div className="mx-auto max-w-5xl px-5 sm:px-8">
-        {/* Section Heading */}
-        <div className="max-w-2xl">
-          <p className="font-mono text-xs uppercase tracking-[0.14em] text-[var(--accent)]">
-            01 / Selected Work
-          </p>
-          <h2 className="mt-3 font-serif text-3xl leading-tight tracking-tight text-[var(--ink)] sm:text-5xl">
-            Practical software, engineered <span className="italic">end to end.</span>
-          </h2>
-          <p className="mt-3.5 text-sm leading-relaxed text-[var(--ink-muted)] sm:text-base">
-            From role-based web applications backed by relational SQL schemas to lightweight daily
-            utilities powered by structured LLM outputs.
-          </p>
-        </div>
-
-        {/* Flagship Card */}
-        {flagship && (
-          <motion.article
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="editorial-card mt-12 rounded-2xl p-6 sm:p-8"
-          >
-            <div className="grid gap-8 lg:grid-cols-12 lg:items-stretch">
-              <div className="flex flex-col justify-between space-y-6 lg:col-span-7">
-                <div>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="font-mono text-xs text-[var(--ink-subtle)]">
-                      PROJECT {flagship.index}
-                    </span>
-                    <StatusBadge project={flagship} />
-                  </div>
-
-                  <h3 className="mt-4 font-serif text-3xl leading-snug tracking-tight text-[var(--ink)] sm:text-[2.15rem]">
-                    {flagship.title}
-                  </h3>
-                  <p className="mt-1 font-mono text-xs text-[var(--ink-subtle)]">
-                    {flagship.subtitle}
-                  </p>
-
-                  <p className="mt-4 text-sm leading-relaxed text-[var(--ink-muted)] sm:text-[15px]">
-                    {flagship.summary}
-                  </p>
-
-                  <ul className="mt-5 space-y-2.5">
-                    {flagship.highlights.map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-start gap-2.5 text-sm leading-relaxed text-[var(--ink-muted)]"
-                      >
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="space-y-4 border-t border-[var(--border)] pt-5">
-                  <div className="flex flex-wrap gap-1.5">
-                    {flagship.stack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-md border border-[var(--border)] bg-[var(--surface-muted)]/70 px-2.5 py-1 font-mono text-[11px] text-[var(--ink-muted)]"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                  <ProjectActions project={flagship} />
-                </div>
-              </div>
-
-              <div className="lg:col-span-5">
-                <FlagshipArchitecturePanel project={flagship} />
-              </div>
-            </div>
-          </motion.article>
-        )}
-
-        {/* Secondary Projects Grid */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-          {secondary.map((project, idx) => (
-            <motion.article
-              key={project.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.45, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="editorial-card flex flex-col justify-between rounded-2xl p-6 sm:p-7"
-            >
-              <div>
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-mono text-xs text-[var(--ink-subtle)]">
-                    PROJECT {project.index}
-                  </span>
-                  <StatusBadge project={project} />
-                </div>
-
-                <h3 className="mt-4 font-serif text-2xl leading-snug tracking-tight text-[var(--ink)] sm:text-[1.75rem]">
-                  {project.title}
-                </h3>
-                <p className="mt-1 font-mono text-[11px] text-[var(--ink-subtle)]">
-                  {project.subtitle}
-                </p>
-
-                <p className="mt-4 text-sm leading-relaxed text-[var(--ink-muted)]">
-                  {project.summary}
-                </p>
-
-                <ul className="mt-4 space-y-2">
-                  {project.highlights.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-2.5 text-xs leading-relaxed text-[var(--ink-muted)] sm:text-[13px]"
-                    >
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--border-strong)]" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-6 space-y-4 border-t border-[var(--border)] pt-5">
-                <div className="flex flex-wrap gap-1.5">
-                  {project.stack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-md border border-[var(--border)] bg-[var(--surface-muted)]/70 px-2.5 py-1 font-mono text-[11px] text-[var(--ink-muted)]"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <ProjectActions project={project} />
-              </div>
-            </motion.article>
-          ))}
-        </div>
+            <ProjectLinks project={project} />
+          </article>
+        ))}
       </div>
     </section>
   );

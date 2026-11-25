@@ -11,7 +11,7 @@ export function useTheme() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'dark') return 'dark';
     } catch {
-      // Ignore storage access errors in restricted contexts
+      // Ignore storage access errors
     }
     return 'light';
   });
@@ -26,13 +26,13 @@ export function useTheme() {
 
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) {
-      metaTheme.setAttribute('content', theme === 'dark' ? '#121210' : '#FAF8F5');
+      metaTheme.setAttribute('content', theme === 'dark' ? '#0D0F12' : '#FFFFFF');
     }
 
     try {
       localStorage.setItem(STORAGE_KEY, theme);
     } catch {
-      // Ignore storage errors
+      // Ignore storage access errors
     }
   }, [theme]);
 
