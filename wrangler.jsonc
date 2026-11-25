@@ -1,0 +1,8 @@
+{
+  // Cloudflare Pages configuration for Wrangler CLI deployments.
+  // Docs: https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "praneet-r",
+  "compatibility_date": "2026-11-25",
+  "pages_build_output_dir": "./dist"
+}

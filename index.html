@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Praneet R — Full-Stack Software Developer</title>
+    <meta
+      name="description"
+      content="Praneet R is a Full-Stack Software Developer based in Bengaluru (open to remote), building calm, practical web applications with Python, React, SQL, and structured LLM APIs."
+    />
+    <meta property="og:title" content="Praneet R — Full-Stack Software Developer" />
+    <meta
+      property="og:description"
+      content="Full-stack web engineering with Python, React, SQL, and practical LLM integration. B.S. in Data Science & Applications, IIT Madras."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#FAF8F5" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Editorial typography: Instrument Serif + Plus Jakarta Sans + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Prevent dark-mode flash; Light mode is strictly the default -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('praneet-theme');
+          if (saved === 'dark') {
+            document.documentElement.classList.add('dark');
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', '#121210');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
